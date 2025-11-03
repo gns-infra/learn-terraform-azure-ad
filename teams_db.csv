@@ -1,0 +1,10 @@
+Team,Applications,Role requirements
+ITOps,"Asana, TailScale, Tableau, Elastic, PagerDuty, Icinga, SSH, Mattermost, Zoom, Adobe, Figma, ADP, CultureAmp",Administrate the entire tenant.
+SRE,"Asana, TailScale, Tableau, Elastic, PagerDuty, Icinga, SSH, Mattermost, Zoom",Administrate Azure cloud resources.
+Security,"Asana, TailScale, Elastic, PagerDuty, Icinga, HackerOne, SSH, Mattermost, Zoom",Audit the tenant.
+Backend,"Asana, TailScale, Elastic, SSH, Mattermost, Zoom",Audit cloud resources.
+Frontend,"Asana, TailScale, Elastic, SSH, Mattermost, Zoom, Figma",Basic users
+Design,"Asana, TailScale, Adobe, Mattermost, Zoom, Figma",Basic users
+Product,"Asana, TailScale, Tableau, Adobe, Mattermost, Zoom, Figma, SurveyMonkey",Basic users
+People Ops,"Asana, TailScale, Elastic, Adobe, Mattermost, Zoom, CultureAmp, ADP",Basic users
+Legal,"Asana, TailScale, Elastic, Adobe, Mattermost, Zoom, ADP",Basic users
