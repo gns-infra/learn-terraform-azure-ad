@@ -1,108 +1,49 @@
-resource "azuread_group" "itops" {
-  display_name = "ITOps"
-  security_enabled = true
+# ------------------
+# DRY / single-source
+# ------------------
+locals {
+  groups = {
+    itops = { display_name = "Technology - ITOps",   job_title = "ITOps",      mail_nickname = "itops-team" }
+    design = { display_name = "UX - Design",         job_title = "Design",     mail_nickname = "ux-design" }
+    frontend = { display_name = "Engineering - Frontend", job_title = "Frontend", mail_nickname = "eng-frontend" }
+    legal = { display_name = "Legal - Legal",        job_title = "Legal",      mail_nickname = "legal-team" }
+    product = { display_name = "Product - Product",  job_title = "Product",    mail_nickname = "product-team" }
+    people_ops = { display_name = "HR - People Ops", job_title = "People Ops", mail_nickname = "people-ops" }
+    backend = { display_name = "Engineering - Backend", job_title = "Backend", mail_nickname = "eng-backend" }
+    security = { display_name = "InfoSec - Security", job_title = "security", mail_nickname = "info-sec" }
+  }
 }
 
-resource "azuread_group_member" "itops" {
-  for_each = { for u in azuread_user.users: u.mail_nickname => u if u.department == "ITOps" }
+# create Microsoft 365 groups (Unified) and make them role-assignable
+resource "azuread_group" "groups" {
+  for_each = local.groups
 
-  group_object_id  = azuread_group.itops.id
-  member_object_id = each.value.id
+  display_name       = each.value.display_name
+  mail_enabled       = true
+  mail_nickname      = each.value.mail_nickname
+  security_enabled   = true
+  types              = ["Unified"]
+  assignable_to_role = true
 }
 
-resource "azuread_group" "sre" {
-  display_name = "SRE"
-  security_enabled = true
+# build the group -> member map and create members
+locals {
+  group_members = merge([
+    for g_key, g in local.groups : {
+      for u_key, u in azuread_user.users :
+      "${g_key}:${u_key}" => {
+        group_key = g_key
+        group_id  = azuread_group.groups[g_key].id
+        user_key  = u_key
+        user_id   = u.id
+      } if u.job_title == g.job_title
+    }
+  ]...)
 }
 
-resource "azuread_group_member" "sre" {
-  for_each = { for u in azuread_user.users: u.mail_nickname => u if u.job_title == "SRE" }
+resource "azuread_group_member" "members" {
+  for_each = local.group_members
 
-  group_object_id  = azuread_group.sre.id
-  member_object_id = each.value.id
+  group_object_id  = each.value.group_id
+  member_object_id = each.value.user_id
 }
-
-resource "azuread_group" "security" {
-  display_name = "Security"
-  security_enabled = true
-}
-
-resource "azuread_group_member" "security" {
-  for_each = { for u in azuread_user.users: u.mail_nickname => u if u.job_title == "Security" }
-
-  group_object_id  = azuread_group.security.id
-  member_object_id = each.value.id
-}
-
-resource "azuread_group" "backend" {
-  display_name = "Backend"
-  security_enabled = true
-}
-
-resource "azuread_group_member" "backend" {
-  for_each = { for u in azuread_user.users: u.mail_nickname => u if u.department == "Backend" }
-
-  group_object_id  = azuread_group.backend.id
-  member_object_id = each.value.id
-}
-
-resource "azuread_group" "frontend" {
-  display_name = "Frontend"
-  security_enabled = true
-}
-
-resource "azuread_group_member" "frontend" {
-  for_each = { for u in azuread_user.users: u.mail_nickname => u if u.job_title == "Frontend" }
-
-  group_object_id  = azuread_group.frontend.id
-  member_object_id = each.value.id
-}
-
-resource "azuread_group" "design" {
-  display_name = "Design"
-  security_enabled = true
-}
-
-resource "azuread_group_member" "design" {
-  for_each = { for u in azuread_user.users: u.mail_nickname => u if u.job_title == "Design" }
-
-  group_object_id  = azuread_group.design.id
-  member_object_id = each.value.id
-}
-
-resource "azuread_group" "product" {
-  display_name = "Product"
-  security_enabled = true
-}
-
-resource "azuread_group_member" "product" {
-  for_each = { for u in azuread_user.users: u.mail_nickname => u if u.job_title == "Product" }
-
-  group_object_id  = azuread_group.product.id
-  member_object_id = each.value.id
-}
-
-resource "azuread_group" "people ops" {
-  display_name = "People Ops"
-  security_enabled = true
-}
-
-resource "azuread_group_member" "people ops" {
-  for_each = { for u in azuread_user.users: u.mail_nickname => u if u.job_title == "People Ops" }
-
-  group_object_id  = azuread_group.peopleops.id
-  member_object_id = each.value.id
-}
-
-resource "azuread_group" "legal" {
-  display_name = "Legal"
-  security_enabled = true
-}
-
-resource "azuread_group_member" "legal" {
-  for_each = { for u in azuread_user.users: u.mail_nickname => u if u.job_title == "Legal" }
-
-  group_object_id  = azuread_group.legal.id
-  member_object_id = each.value.id
-}
-
