@@ -11,6 +11,7 @@ locals {
     people_ops = { display_name = "HR - People Ops", job_title = "People Ops", mail_nickname = "people-ops" }
     backend = { display_name = "Engineering - Backend", job_title = "Backend", mail_nickname = "eng-backend" }
     security = { display_name = "InfoSec - Security", job_title = "security", mail_nickname = "info-sec" }
+    sre = { display_name = "Platform - SRE", job_title = "sre", mail_nickname = "sre" }
   }
 }
 
